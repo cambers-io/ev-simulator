@@ -1,0 +1,17 @@
+ocpp_path: wss://ocpp.server.com/ocpp
+logname: one
+stations:
+  - serial: SERIALNUMBER
+    power: 180000
+    currentType: DC
+    requireAuthorize: "false"
+    automatictransaction: "false"
+    minDuration: 600
+    maxDuration: 600
+    minDelayBetweenTwoTransactions: 305
+    maxDelayBetweenTwoTransactions: 305
+    connectors: [ 1,2 ]
+    rfid:
+      id:
+        - ""
+

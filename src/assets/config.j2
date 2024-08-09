@@ -1,0 +1,25 @@
+{
+  "supervisionURLs": [
+    "{{ ocpp_path }}"
+  ],
+  "distributeStationsToTenantsEqually": true,
+  "performanceStorage": {
+    "enabled": true
+  },
+  "chargingStationsPerWorker": 1,
+  "workerProcess": "workerSet",
+  "workerPoolMinSize": 16,
+  "workerPoolMaxSize": 32,
+  "stationTemplateURLs":
+  [{% for station in stations %}
+    {
+      "file": "{{ station.serial }}.json",
+      "numberOfStations": 1
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}],
+  "logConsole": true,
+  "logLevel": "debug",
+  "logStatisticsInterval": 0,
+  "logFile": "combined-{{ logname }}.log",
+  "logErrorFile": "error-{{ logname }}.log"
+}

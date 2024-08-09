@@ -1,0 +1,4 @@
+[  {% for identification in rfid.id %}
+  "{{ identification }}"{% if not loop.last %},{% endif %}{% endfor %}
+]
+
