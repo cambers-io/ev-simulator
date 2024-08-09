@@ -1,4 +1,4 @@
-FROM node:16.3.0-alpine as builder
+FROM node:20-alpine as builder
 
 WORKDIR /usr/builder
 
@@ -11,17 +11,17 @@ COPY src ./src
 COPY config.json ./src/assets/config.json
 RUN npm run build
 
-FROM node:16.3.0-alpine
+FROM node:20-alpine
 
 RUN apk update && apk add --no-cache python3 py3-pip
-RUN pip3 install jinja2 pyyaml cherrypy
+RUN pip3 install jinja2 pyyaml cherrypy --break-system-packages
 
 WORKDIR /usr/app
 
 COPY --from=builder /usr/builder/node_modules ./node_modules
 COPY --from=builder /usr/builder/dist ./dist
-COPY render.py ./
-COPY healthz.py ./
+COPY deployment_util ./deployment_util
+COPY sample.yaml ./
 COPY run.sh ./
 COPY README.md NOTICE LICENSE ./
 RUN chmod +x run.sh

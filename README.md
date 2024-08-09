@@ -6,25 +6,12 @@ Simple [node.js](https://nodejs.org/) program to simulate a set of charging stat
 
 ## Prerequisites
 
-### Windows
-
-* [Chocolatey](https://chocolatey.org/):
+### Docker
 
 ```powershell
-choco install -y nodejs-lts
+source docker-build.sh 1.0
+docker run -t ev-simulator:1.0 
 ```
-
-### MacOSX
-
-* [Homebrew](https://brew.sh/):
-
-```shell
-brew install node@14
-```
-
-### GNU/Linux: 
-
-* [NodeSource](https://github.com/nodesource/distributions) Node.js Binary Distributions for version 14.X
 
 ## Configuration syntax
 
