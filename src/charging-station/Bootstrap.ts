@@ -110,6 +110,8 @@ export default class Bootstrap {
   }
 
   private logPrefix(): string {
-    return Utils.logPrefix(' Bootstrap |');
-  }
+    return `${Utils.logPrefix(' Bootstrap |')}`;
+      }
+
 }
+

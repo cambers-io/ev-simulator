@@ -38,7 +38,7 @@ export default abstract class OCPPRequestService {
       if (this.chargingStation.isWebSocketConnectionOpened()) {
         // Yes: Send Message
         const beginId = PerformanceStatistics.beginMeasure(commandName);
-        logger.debug(`${self.chargingStation.logPrefix()} OCPP sending: ${messageToSend}`);
+        logger.debug(`${self.chargingStation.logPrefix()} OCPP Sending: ${commandName} ${messageToSend}`);
         this.chargingStation.wsConnection.send(messageToSend);
         PerformanceStatistics.endMeasure(commandName, beginId);
       } else if (!skipBufferingOnError) {

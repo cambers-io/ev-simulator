@@ -196,6 +196,6 @@ export default class PerformanceStatistics {
   }
 
   private logPrefix(): string {
-    return Utils.logPrefix(` ${this.objId} | Performance statistics`);
+    return `${Utils.logPrefix(` ${this.objId} | Performance statistics`)}`;
   }
 }

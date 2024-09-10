@@ -64,7 +64,8 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
     let response;
     const methodName = `handleRequest${commandName}`;
     logger.debug(chalk.green(`${this.chargingStation.logPrefix()} OCPP Incoming command: ` + commandName.toString() + "---------"));
-    logger.debug(`${this.chargingStation.logPrefix()} OCPP Incoming command: ` + commandName.toString() + " " + commandPayload.toString());
+    const jsonString = JSON.stringify(commandPayload).replace(/\\/g, '');
+    logger.debug(`${this.chargingStation.logPrefix()} OCPP Incoming command: ` + commandName.toString() + " " + jsonString.toString());
 
     // Call
     if (typeof this[methodName] === 'function') {
@@ -532,6 +533,9 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
         }
 
         return Constants.OCPP_DATA_TRANSFER_RESPONSE_REJECTED;
+      } else if (commandPayload.vendorId == "org.openchargealliance.costmsg") {
+          return Constants.OCPP_DATA_TRANSFER_RESPONSE_ACCEPTED;
+
       } else if (commandPayload.vendorId == "SIMULATOR") {
         return Constants.OCPP_DATA_TRANSFER_RESPONSE_UNKNOWNMESSAGEID;
 

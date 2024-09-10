@@ -93,7 +93,7 @@ export default class ChargingStation {
   }
 
   public logPrefix(): string {
-    return Utils.logPrefix(` ${this.stationInfo.chargingStationId} |`);
+    return `${Utils.logPrefix(` ${this.stationInfo.chargingStationId} |`)}`;
   }
 
   public getBootNotificationRequest(): BootNotificationRequest {

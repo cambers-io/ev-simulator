@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 
 export default class Utils {
   public static logPrefix(prefixString = ''): string {
-    return new Date().toLocaleString() + prefixString;
+    return new Date().toISOString() + '|' + prefixString;
   }
 
   public static generateUUID(): string {

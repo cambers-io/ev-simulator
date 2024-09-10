@@ -133,7 +133,8 @@ export default class Configuration {
   }
 
   private static logPrefix(): string {
-    return new Date().toLocaleString() + ' Simulator configuration |';
+    const now = new Date();
+    return `${now.toISOString()} Simulator configuration |`;
   }
 
   private static warnDeprecatedConfigurationKey(key: string, sectionName?: string, logMsgToAppend = '') {
