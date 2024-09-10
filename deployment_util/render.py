@@ -3,7 +3,7 @@ from jinja2 import Template
 
 import argparse
 
-parser = argparse.ArgumentParser(description='Generate SAP assets configuration.')
+parser = argparse.ArgumentParser(description='Generate assets configuration.')
 parser.add_argument('yaml', type=str, help='yaml file ')
 
 args = parser.parse_args()
