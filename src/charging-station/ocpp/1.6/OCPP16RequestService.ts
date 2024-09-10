@@ -84,6 +84,15 @@ export default class OCPP16RequestService extends OCPPRequestService {
         meterStart: Utils.roundTo(this.chargingStation.getEnergyActiveImportRegisterByConnectorId(connectorId),0),
         timestamp: new Date().toISOString(),
       };
+          // Start transaction
+        this.chargingStation.getConnector(connectorId).batterySize = Utils.getRandomInt(this.chargingStation.stationInfo.AutomaticTransactionGenerator.minBatterySize,
+          this.chargingStation.stationInfo.AutomaticTransactionGenerator.maxBatterySize);
+        this.chargingStation.getConnector(connectorId).startEnergy = Utils.getRandomInt(this.chargingStation.stationInfo.AutomaticTransactionGenerator.minStartEnergy,
+          this.chargingStation.stationInfo.AutomaticTransactionGenerator.maxStartEnergy);
+        this.chargingStation.getConnector(connectorId).desiredEnergy = Utils.getRandomInt(this.chargingStation.stationInfo.AutomaticTransactionGenerator.minDesiredEnergy,
+          this.chargingStation.stationInfo.AutomaticTransactionGenerator.maxDesiredEnergy);
+        this.chargingStation.getConnector(connectorId).VIN = this.chargingStation.stationInfo.AutomaticTransactionGenerator.VIN ;
+
       this.chargingStation.getConnector(connectorId).currentEnergy = this.chargingStation.getConnector(connectorId).startEnergy ;
       this.chargingStation.getConnector(connectorId).authorizeIdTag = !Utils.isUndefined(idTag) ? idTag : Constants.TRANSACTION_DEFAULT_IDTAG ;
       const power = 0 ;
