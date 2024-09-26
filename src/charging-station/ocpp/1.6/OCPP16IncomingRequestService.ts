@@ -490,7 +490,7 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
   private async handleRequestDataTransfer(commandPayload: OCPP16DataTransferRequest): Promise<OCPP16DataTransferResponse> {
     try {
 
-      if (commandPayload.vendorId == "SIMULATOR" && commandPayload.messageId == "ChangeATG") {
+      if (commandPayload.messageId == "ChangeATG") {
         console.log(commandPayload.data);
         const command = JSON.parse(commandPayload.data);
 
@@ -499,7 +499,7 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
         return Constants.OCPP_DATA_TRANSFER_RESPONSE_ACCEPTED;
 
 
-      } else if (commandPayload.vendorId == "SIMULATOR" && commandPayload.messageId == "PluggedIn") {
+      } else if (commandPayload.messageId == "PluggedIn") {
 
         console.log(commandPayload.data);
         const data = JSON.parse(commandPayload.data);
@@ -512,7 +512,7 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
         }
 
         return Constants.OCPP_DATA_TRANSFER_RESPONSE_REJECTED;
-      } else if (commandPayload.vendorId == "SIMULATOR" && commandPayload.messageId == "Unplugged") {
+      } else if (commandPayload.messageId == "Unplugged") {
 
         console.log(commandPayload.data);
         const data = JSON.parse(commandPayload.data);
