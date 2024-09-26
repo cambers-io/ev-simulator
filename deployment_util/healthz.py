@@ -46,13 +46,22 @@ def update_config(serial_number):
     with open(file_path, 'w') as file:
         json.dump(config_data, file)
     return jsonify({"status": "Config updated successfully"})
+
+
 @app.route('/log', methods=['GET'])
 def get_log():
     log_file_path = '/var/log/ev-simulator/ev-simulator.log'
+    limit = request.args.get('limit', default=1000, type=int)
+    if limit > 3000:
+        abort(400, description="Limit should be less than 3000 lines")
+
     if os.path.exists(log_file_path):
         with open(log_file_path, 'r') as file:
-            log_data = file.read()
-        return jsonify({"log": log_data})
+            log_data = file.readlines()
+
+        # Get the last `limit` entries
+        last_entries = log_data[-limit:]
+        return jsonify({"log": ''.join(last_entries)})
     else:
         abort(404, description="Log file not found")
 

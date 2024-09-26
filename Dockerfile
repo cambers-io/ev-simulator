@@ -24,6 +24,7 @@ RUN echo "/var/log/ev-simulator/ev-simulator.log {" > /etc/logrotate.d/ev-simula
     && echo "  compress" >> /etc/logrotate.d/ev-simulator \
     && echo "  notifempty" >> /etc/logrotate.d/ev-simulator \
     && echo "  create 640 root root" >> /etc/logrotate.d/ev-simulator \
+    && echo "  copytruncate" >> /etc/logrotate.d/ev-simulator \
     && echo "}" >> /etc/logrotate.d/ev-simulator
 RUN mkdir -p /var/log/ev-simulator
 # Add a cron job to run logrotate periodically (every 15 minutes)
