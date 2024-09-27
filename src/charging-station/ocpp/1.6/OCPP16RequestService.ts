@@ -134,7 +134,7 @@ export default class OCPP16RequestService extends OCPPRequestService {
       const vin = this.chargingStation.getConnector(connectorId).VIN ;
       logger.debug(`${this.chargingStation.logPrefix()} ${new Date().toISOString()} Power set to: ${power} W, with ${currentEnergy} Wh and SOC: ${soc} % using ${vin}`);
 
-      return await this.sendMessage(Utils.generateUUID(), payload, MessageType.CALL_MESSAGE, OCPP16RequestCommand.STOP_TRANSACTION) as OCPP16StartTransactionResponse;
+      return await this.sendMessage(Utils.generateUUID(), payload, MessageType.CALL_MESSAGE, OCPP16RequestCommand.STOP_TRANSACTION) as OCPP16StopTransactionResponse;
     } catch (error) {
       this.handleRequestError(OCPP16RequestCommand.STOP_TRANSACTION, error);
     }

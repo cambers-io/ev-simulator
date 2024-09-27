@@ -512,7 +512,24 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
         }
 
         return Constants.OCPP_DATA_TRANSFER_RESPONSE_REJECTED;
-      } else if (commandPayload.messageId == "Unplugged") {
+      } else if (commandPayload.messageId == "StopCharging") {
+
+        console.log(commandPayload.data);
+        const data = JSON.parse(commandPayload.data);
+        const connectorId = data.connectorId;
+
+        if (connectorId > 0 && (this.chargingStation.getConnector(connectorId).availability === OCPP16AvailabilityType.OPERATIVE && this.chargingStation.getConnector(connectorId).status === OCPP16ChargePointStatus.CHARGING)) {
+          const transactionId = this.chargingStation.getConnector(connectorId).transactionId;
+          await this.chargingStation.ocppRequestService.sendStatusNotification(Utils.convertToInt(connectorId), OCPP16ChargePointStatus.FINISHING);
+          this.chargingStation.getConnector(Utils.convertToInt(connectorId)).status = OCPP16ChargePointStatus.FINISHING;
+          await this.chargingStation.ocppRequestService.sendStopTransaction(transactionId, this.chargingStation.getEnergyActiveImportRegisterByTransactionId(transactionId),
+            this.chargingStation.getTransactionIdTag(transactionId));
+
+          return Constants.OCPP_DATA_TRANSFER_RESPONSE_ACCEPTED;
+        }
+
+        return Constants.OCPP_DATA_TRANSFER_RESPONSE_REJECTED;
+      }else if (commandPayload.messageId == "Unplugged") {
 
         console.log(commandPayload.data);
         const data = JSON.parse(commandPayload.data);
@@ -522,13 +539,9 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
           this.chargingStation.getConnector(connectorId).status = OCPP16ChargePointStatus.AVAILABLE;
           await this.chargingStation.ocppRequestService.sendStatusNotification(connectorId, OCPP16ChargePointStatus.AVAILABLE);
           return Constants.OCPP_DATA_TRANSFER_RESPONSE_ACCEPTED;
-        } else if (connectorId > 0 && (this.chargingStation.getConnector(connectorId).availability === OCPP16AvailabilityType.OPERATIVE && this.chargingStation.getConnector(connectorId).status === OCPP16ChargePointStatus.CHARGING)) {
-          const transactionId = this.chargingStation.getConnector(connectorId).transactionId;
-          await this.chargingStation.ocppRequestService.sendStatusNotification(Utils.convertToInt(connectorId), OCPP16ChargePointStatus.FINISHING);
-          this.chargingStation.getConnector(Utils.convertToInt(connectorId)).status = OCPP16ChargePointStatus.FINISHING;
-          await this.chargingStation.ocppRequestService.sendStopTransaction(transactionId, this.chargingStation.getEnergyActiveImportRegisterByTransactionId(transactionId),
-            this.chargingStation.getTransactionIdTag(transactionId));
-
+        } else if (connectorId > 0 && (this.chargingStation.getConnector(connectorId).availability === OCPP16AvailabilityType.OPERATIVE && this.chargingStation.getConnector(connectorId).status === OCPP16ChargePointStatus.FINISHING)) {
+         this.chargingStation.getConnector(connectorId).status = OCPP16ChargePointStatus.AVAILABLE;
+          await this.chargingStation.ocppRequestService.sendStatusNotification(connectorId, OCPP16ChargePointStatus.AVAILABLE);
           return Constants.OCPP_DATA_TRANSFER_RESPONSE_ACCEPTED;
         }
 

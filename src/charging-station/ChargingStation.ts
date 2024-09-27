@@ -183,6 +183,14 @@ export default class ChargingStation {
     return this.stationInfo.beginEndMeterValues ?? false;
   }
 
+   public getPluggedInRequired(): boolean {
+    return this.stationInfo.pluggedInRequired ?? false;
+  }
+
+   public getUnpluggedRequired(): boolean {
+    return this.stationInfo.unpluggedRequired ?? false;
+  }
+
   public getMeteringPerTransaction(): boolean {
     return this.stationInfo.meteringPerTransaction ?? true;
   }

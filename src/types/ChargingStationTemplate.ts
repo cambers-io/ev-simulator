@@ -86,4 +86,6 @@ export default interface ChargingStationTemplate {
   Configuration?: ChargingStationConfiguration;
   AutomaticTransactionGenerator: AutomaticTransactionGenerator;
   Connectors: Connectors;
+  pluggedInRequired?: boolean;
+  unpluggedRequired?: boolean;
 }
