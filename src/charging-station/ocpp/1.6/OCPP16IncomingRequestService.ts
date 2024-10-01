@@ -343,15 +343,14 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
             else
              {
                  //Send Start Transaction only if the connector is plugged in
-                 if (this.chargingStation.getPluggedInRequired() && this.chargingStation.getConnector(transactionConnectorId).pluggedIn) {
-                     if (await this.chargingStation.ocppRequestService.sendStartTransaction(transactionConnectorId, commandPayload.idTag)).idTagInfo.status === OCPP16AuthorizationStatus.ACCEPTED) {
-                        logger.debug(this.chargingStation.logPrefix() + ' Transaction remotely STARTED on ' + this.chargingStation.stationInfo.chargingStationId + '#' + transactionConnectorId.toString() + ' for idTag ' + commandPayload.idTag);
-                        return Constants.OCPP_RESPONSE_ACCEPTED;
-                     }else
-                     {
-                        return this.notifyRemoteStartTransactionRejected(transactionConnectorId, commandPayload.idTag);
-                     }
-                 }
+                if (this.chargingStation.getPluggedInRequired() && this.chargingStation.getConnector(transactionConnectorId).pluggedIn) {
+                  if ((await this.chargingStation.ocppRequestService.sendStartTransaction(transactionConnectorId, commandPayload.idTag)).idTagInfo.status === OCPP16AuthorizationStatus.ACCEPTED) {
+                    logger.debug(this.chargingStation.logPrefix() + ' Transaction remotely STARTED on ' + this.chargingStation.stationInfo.chargingStationId + '#' + transactionConnectorId.toString() + ' for idTag ' + commandPayload.idTag);
+                    return Constants.OCPP_RESPONSE_ACCEPTED;
+                  } else {
+                    return this.notifyRemoteStartTransactionRejected(transactionConnectorId, commandPayload.idTag);
+                  }
+                }
                 //Replying Remote Start but never send Start Transaction
                 return Constants.OCPP_RESPONSE_ACCEPTED;
              }
