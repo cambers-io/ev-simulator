@@ -18,6 +18,7 @@ export interface Connector {
   authorizeIdTag?: string;
   VIN?: string;
   authorized?: boolean;
+  pluggedIn?: boolean;
   transactionStarted?: boolean;
   transactionId?: number;
   batterySize?: number;

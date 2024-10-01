@@ -336,10 +336,25 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
           if (authorized) {
             // Authorization successful, start transaction
             if (this.setRemoteStartTransactionChargingProfile(transactionConnectorId, commandPayload.chargingProfile)) {
-              if ((await this.chargingStation.ocppRequestService.sendStartTransaction(transactionConnectorId, commandPayload.idTag)).idTagInfo.status === OCPP16AuthorizationStatus.ACCEPTED) {
+              if (!this.chargingStation.getPluggedInRequired() && await this.chargingStation.ocppRequestService.sendStartTransaction(transactionConnectorId, commandPayload.idTag)).idTagInfo.status === OCPP16AuthorizationStatus.ACCEPTED) {
                 logger.debug(this.chargingStation.logPrefix() + ' Transaction remotely STARTED on ' + this.chargingStation.stationInfo.chargingStationId + '#' + transactionConnectorId.toString() + ' for idTag ' + commandPayload.idTag);
                 return Constants.OCPP_RESPONSE_ACCEPTED;
               }
+            else
+             {
+                 //Send Start Transaction only if the connector is plugged in
+                 if (this.chargingStation.getPluggedInRequired() && this.chargingStation.getConnector(transactionConnectorId).pluggedIn) {
+                     if (await this.chargingStation.ocppRequestService.sendStartTransaction(transactionConnectorId, commandPayload.idTag)).idTagInfo.status === OCPP16AuthorizationStatus.ACCEPTED) {
+                        logger.debug(this.chargingStation.logPrefix() + ' Transaction remotely STARTED on ' + this.chargingStation.stationInfo.chargingStationId + '#' + transactionConnectorId.toString() + ' for idTag ' + commandPayload.idTag);
+                        return Constants.OCPP_RESPONSE_ACCEPTED;
+                     }else
+                     {
+                        return this.notifyRemoteStartTransactionRejected(transactionConnectorId, commandPayload.idTag);
+                     }
+                 }
+                //Replying Remote Start but never send Start Transaction
+                return Constants.OCPP_RESPONSE_ACCEPTED;
+             }
               return this.notifyRemoteStartTransactionRejected(transactionConnectorId, commandPayload.idTag);
             }
             return this.notifyRemoteStartTransactionRejected(transactionConnectorId, commandPayload.idTag);
@@ -507,6 +522,7 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
 
         if (connectorId > 0 && (this.chargingStation.getConnector(connectorId).availability === OCPP16AvailabilityType.OPERATIVE && this.chargingStation.getConnector(connectorId).status === OCPP16ChargePointStatus.AVAILABLE)) {
           this.chargingStation.getConnector(connectorId).status = OCPP16ChargePointStatus.PREPARING;
+          this.chargingStation.getConnector(connectorId).pluggedIn = true;
           await this.chargingStation.ocppRequestService.sendStatusNotification(connectorId, OCPP16ChargePointStatus.PREPARING);
           return Constants.OCPP_DATA_TRANSFER_RESPONSE_ACCEPTED;
         }
@@ -537,10 +553,12 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
 
         if (connectorId > 0 && (this.chargingStation.getConnector(connectorId).availability === OCPP16AvailabilityType.OPERATIVE && this.chargingStation.getConnector(connectorId).status === OCPP16ChargePointStatus.PREPARING)) {
           this.chargingStation.getConnector(connectorId).status = OCPP16ChargePointStatus.AVAILABLE;
+          this.chargingStation.getConnector(connectorId).pluggedIn = false;
           await this.chargingStation.ocppRequestService.sendStatusNotification(connectorId, OCPP16ChargePointStatus.AVAILABLE);
           return Constants.OCPP_DATA_TRANSFER_RESPONSE_ACCEPTED;
         } else if (connectorId > 0 && (this.chargingStation.getConnector(connectorId).availability === OCPP16AvailabilityType.OPERATIVE && this.chargingStation.getConnector(connectorId).status === OCPP16ChargePointStatus.FINISHING)) {
          this.chargingStation.getConnector(connectorId).status = OCPP16ChargePointStatus.AVAILABLE;
+          this.chargingStation.getConnector(connectorId).pluggedIn = false;
           await this.chargingStation.ocppRequestService.sendStatusNotification(connectorId, OCPP16ChargePointStatus.AVAILABLE);
           return Constants.OCPP_DATA_TRANSFER_RESPONSE_ACCEPTED;
         }

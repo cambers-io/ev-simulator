@@ -1208,6 +1208,7 @@ export default class ChargingStation {
 
   private initTransactionAttributesOnConnector(connectorId: number): void {
     this.getConnector(connectorId).authorized = false;
+    this.getConnector(connectorId).pluggedIn = false;
     this.getConnector(connectorId).transactionStarted = false;
     this.getConnector(connectorId).energyActiveImportRegisterValue = 0;
     this.getConnector(connectorId).transactionEnergyActiveImportRegisterValue = 0;
