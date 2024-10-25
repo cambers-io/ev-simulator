@@ -88,4 +88,5 @@ export default interface ChargingStationTemplate {
   Connectors: Connectors;
   pluggedInRequired?: boolean;
   unpluggedRequired?: boolean;
+  rejectAllRemoteStart?: boolean;
 }

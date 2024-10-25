@@ -314,6 +314,11 @@ export default class OCPP16IncomingRequestService extends OCPPIncomingRequestSer
 
   private async handleRequestRemoteStartTransaction(commandPayload: RemoteStartTransactionRequest): Promise<DefaultResponse> {
     const transactionConnectorId: number = commandPayload.connectorId;
+    if (this.chargingStation.getRejectAllRemoteStart())
+    {
+        return this.notifyRemoteStartTransactionRejected(transactionConnectorId, commandPayload.idTag);
+    }
+
     if (transactionConnectorId) {
       await this.chargingStation.ocppRequestService.sendStatusNotification(transactionConnectorId, OCPP16ChargePointStatus.PREPARING);
       this.chargingStation.getConnector(transactionConnectorId).status = OCPP16ChargePointStatus.PREPARING;

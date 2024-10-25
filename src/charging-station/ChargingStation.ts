@@ -191,6 +191,10 @@ export default class ChargingStation {
     return this.stationInfo.unpluggedRequired ?? false;
   }
 
+   public getRejectAllRemoteStart(): boolean {
+    return this.stationInfo.rejectAllRemoteStart ?? false;
+  }
+
   public getMeteringPerTransaction(): boolean {
     return this.stationInfo.meteringPerTransaction ?? true;
   }
