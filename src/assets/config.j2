@@ -4,9 +4,9 @@
   ],
   "distributeStationsToTenantsEqually": true,
   "chargingStationsPerWorker": 1,
-  "workerProcess": "workerSet",
-  "workerPoolMinSize": 16,
-  "workerPoolMaxSize": 32,
+  "workerProcess": "staticPool",
+  "workerPoolMinSize": 1,
+  "workerPoolMaxSize": 1,
   "stationTemplateURLs":
   [{% for station in stations %}
     {
