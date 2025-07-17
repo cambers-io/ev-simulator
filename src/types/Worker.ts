@@ -36,7 +36,7 @@ export interface WorkerMessage {
 
 export enum WorkerMessageEvents {
   START_WORKER_ELEMENT = 'startWorkerElement',
-  STOP_WORKER_ELEMENT = 'stopWorkerElement',
-  PERFORMANCE_STATISTICS = 'performanceStatistics'
+  STOP_WORKER_ELEMENT = 'stopWorkerElement'
+  // PERFORMANCE_STATISTICS = 'performanceStatistics'
 }
 

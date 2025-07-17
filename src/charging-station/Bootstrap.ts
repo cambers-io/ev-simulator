@@ -101,10 +101,12 @@ export default class Bootstrap {
         poolOptions: {
           workerChoiceStrategy: Configuration.getWorkerPoolStrategy()
         },
+
+        // TODO: Come back and see if this part needs to be deleted
         messageHandler: async (msg: WorkerMessage) => {
-          if (msg.id === WorkerMessageEvents.PERFORMANCE_STATISTICS) {
-            await Bootstrap.storage.storePerformanceStatistics(msg.data);
-          }
+
+          //if (msg.id === WorkerMessageEvents.SOMETHING) {
+          // }
         }
       });
   }

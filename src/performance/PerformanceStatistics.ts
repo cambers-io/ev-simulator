@@ -190,9 +190,6 @@ export default class PerformanceStatistics {
     this.statistics.statisticsData[entryName].medTimeMeasurement = this.median(this.statistics.statisticsData[entryName].timeMeasurementSeries);
     this.statistics.statisticsData[entryName].ninetyFiveThPercentileTimeMeasurement = this.percentile(this.statistics.statisticsData[entryName].timeMeasurementSeries, 95);
     this.statistics.statisticsData[entryName].stdDevTimeMeasurement = this.stdDeviation(this.statistics.statisticsData[entryName].timeMeasurementSeries);
-    if (Configuration.getPerformanceStorage().enabled) {
-      parentPort.postMessage({ id: WorkerMessageEvents.PERFORMANCE_STATISTICS, data: this.statistics });
-    }
   }
 
   private logPrefix(): string {
