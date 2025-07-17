@@ -8,7 +8,6 @@ import {
 
 import ChargingStation from './ChargingStation';
 import Constants from '../utils/Constants';
-import PerformanceStatistics from '../performance/PerformanceStatistics';
 import Utils from '../utils/Utils';
 import logger from '../utils/Logger';
 import ChargingStationTemplate from '../types/ChargingStationTemplate';
@@ -162,7 +161,6 @@ export default class AutomaticTransactionGenerator {
 
   private async startTransaction(connectorId: number): Promise<StartTransactionResponse | AuthorizeResponse> {
     const measureId = 'StartTransaction with ATG';
-    const beginId = PerformanceStatistics.beginMeasure(measureId);
     let startResponse: StartTransactionResponse;
     if (this.chargingStation.hasAuthorizedTags()) {
       const tagId = this.chargingStation.getRandomTagId();
@@ -173,27 +171,22 @@ export default class AutomaticTransactionGenerator {
           logger.info(this.logPrefix(connectorId) + ' start transaction for tagID ' + tagId);
           // Start transaction
           startResponse = await this.chargingStation.ocppRequestService.sendStartTransaction(connectorId, tagId);
-          PerformanceStatistics.endMeasure(measureId, beginId);
           return startResponse;
         }
-        PerformanceStatistics.endMeasure(measureId, beginId);
         return authorizeResponse;
       }
       logger.info(this.logPrefix(connectorId) + ' start transaction for tagID ' + tagId);
       // Start transaction
       startResponse = await this.chargingStation.ocppRequestService.sendStartTransaction(connectorId, tagId);
-      PerformanceStatistics.endMeasure(measureId, beginId);
       return startResponse;
     }
     logger.info(this.logPrefix(connectorId) + ' start transaction without a tagID');
     startResponse = await this.chargingStation.ocppRequestService.sendStartTransaction(connectorId);
-    PerformanceStatistics.endMeasure(measureId, beginId);
     return startResponse;
   }
 
   private async stopTransaction(connectorId: number, reason: StopTransactionReason = StopTransactionReason.NONE): Promise<StopTransactionResponse> {
     const measureId = 'StopTransaction with ATG';
-    const beginId = PerformanceStatistics.beginMeasure(measureId);
     let transactionId = 0;
     let stopResponse: StopTransactionResponse;
     if (this.chargingStation.getConnector(connectorId)?.transactionStarted) {
@@ -205,7 +198,6 @@ export default class AutomaticTransactionGenerator {
     } else {
       logger.warn(`${this.logPrefix(connectorId)} trying to stop a not started transaction${transactionId ? ' ' + transactionId.toString() : ''}`);
     }
-    PerformanceStatistics.endMeasure(measureId, beginId);
     return stopResponse;
   }
 

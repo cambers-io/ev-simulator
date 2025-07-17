@@ -41,7 +41,6 @@ import OCPPError from './ocpp/OCPPError';
 import OCPPIncomingRequestService from './ocpp/OCPPIncomingRequestService';
 import OCPPRequestService from './ocpp/OCPPRequestService';
 import {OCPPVersion} from '../types/ocpp/OCPPVersion';
-import PerformanceStatistics from '../performance/PerformanceStatistics';
 import {StopTransactionReason} from '../types/ocpp/Transaction';
 import {URL} from 'url';
 import Utils from '../utils/Utils';
@@ -60,7 +59,6 @@ export default class ChargingStation {
   public configuration!: ChargingStationConfiguration;
   public wsConnection!: WebSocket;
   public requests: Map<string, Request>;
-  public performanceStatistics!: PerformanceStatistics;
   public heartbeatSetInterval!: NodeJS.Timeout;
   public ocppRequestService!: OCPPRequestService;
   private index: number;
@@ -336,7 +334,6 @@ export default class ChargingStation {
 
   public start(): void {
     if (this.getEnableStatistics()) {
-      this.performanceStatistics.start();
     }
     this.openWSConnection();
     // Monitor authorization file
@@ -370,7 +367,6 @@ export default class ChargingStation {
       this.wsConnection.close();
     }
     if (this.getEnableStatistics()) {
-      this.performanceStatistics.stop();
     }
     this.bootNotificationResponse = null;
     this.stopped = true;
@@ -677,7 +673,6 @@ export default class ChargingStation {
     }
     this.stationInfo.powerDivider = this.getPowerDivider();
     if (this.getEnableStatistics()) {
-      this.performanceStatistics = new PerformanceStatistics(this.stationInfo.chargingStationId, this.wsConnectionUrl);
     }
   }
 
@@ -781,7 +776,6 @@ export default class ChargingStation {
         // Incoming Message
         case MessageType.CALL_MESSAGE:
           if (this.getEnableStatistics()) {
-            this.performanceStatistics.addRequestStatistic(commandName, messageType);
           }
           // Process the call
           await this.ocppIncomingRequestService.handleRequest(messageId, commandName, commandPayload);
@@ -1133,15 +1127,6 @@ export default class ChargingStation {
               this.automaticTransactionGenerator.stop();
             }
             this.startAutomaticTransactionGenerator();
-            try {
-              if (this.getEnableStatistics()) {
-                this.performanceStatistics.restart();
-              } else {
-                this.performanceStatistics.stop();
-              }
-            } catch (error) {
-              logger.error(this.logPrefix() + 'Error reconfigure performance statistics : %j', error);
-            }
             // FIXME?: restart heartbeat and WebSocket ping when their interval values have changed
           } catch (error) {
             logger.error(this.logPrefix() + ' Charging station template file monitoring error: %j', error);
