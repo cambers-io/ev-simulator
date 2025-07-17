@@ -1,7 +1,6 @@
 import ConfigurationData, { StationTemplateURL } from '../types/ConfigurationData';
 
 import Constants from './Constants';
-import { StorageType } from '../types/Storage';
 import type { WorkerChoiceStrategy } from 'poolifier';
 import { WorkerProcessType } from '../types/Worker';
 import chalk from 'chalk';
