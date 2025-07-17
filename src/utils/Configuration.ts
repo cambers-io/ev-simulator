@@ -1,4 +1,4 @@
-import ConfigurationData, { StationTemplateURL, StorageConfiguration } from '../types/ConfigurationData';
+import ConfigurationData, { StationTemplateURL } from '../types/ConfigurationData';
 
 import Constants from './Constants';
 import { StorageType } from '../types/Storage';
