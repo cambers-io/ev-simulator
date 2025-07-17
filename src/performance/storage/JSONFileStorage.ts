@@ -13,22 +13,6 @@ export class JSONFileStorage extends Storage {
     this.dbName = this.storageURI.pathname;
   }
 
-  public storePerformanceStatistics(performanceStatistics: Statistics): void {
-    this.checkPerformanceRecordsFile();
-    lockfile.lock(this.dbName, { stale: 5000, retries: 3 })
-      .then(async (release) => {
-        try {
-          const fileData = fs.readFileSync(this.dbName, 'utf8');
-          const performanceRecords: Statistics[] = fileData ? JSON.parse(fileData) as Statistics[] : [];
-          performanceRecords.push(performanceStatistics);
-          fs.writeFileSync(this.dbName, JSON.stringify(performanceRecords, null, 2), 'utf8');
-        } catch (error) {
-          FileUtils.handleFileException(this.logPrefix, Constants.PERFORMANCE_RECORDS_FILETYPE, this.dbName, error);
-        }
-        await release();
-      })
-      .catch(() => { /* This is intentional */ });
-  }
 
   public open(): void {
     try {

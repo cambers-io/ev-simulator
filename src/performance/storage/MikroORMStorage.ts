@@ -18,14 +18,7 @@ export class MikroORMStorage extends Storage {
     this.dbName = this.getDBName();
   }
 
-  public async storePerformanceStatistics(performanceStatistics: Statistics): Promise<void> {
-    try {
-      const performanceRecord = new PerformanceRecord();
-      await this.orm.em.persistAndFlush(performanceRecord);
-    } catch (error) {
-      this.handleDBError(this.storageType, error, Constants.PERFORMANCE_RECORDS_TABLE);
-    }
-  }
+
 
   public async open(): Promise<void> {
     try {

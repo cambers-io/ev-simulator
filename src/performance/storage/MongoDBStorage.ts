@@ -15,15 +15,6 @@ export class MongoDBStorage extends Storage {
     this.dbName = this.storageURI.pathname.replace(/(?:^\/)|(?:\/$)/g, '') ?? Constants.DEFAULT_PERFORMANCE_RECORDS_DB_NAME;
   }
 
-  public async storePerformanceStatistics(performanceStatistics: Statistics): Promise<void> {
-    try {
-      this.checkDBConnection();
-      await this.client.db(this.dbName).collection<Statistics>(Constants.PERFORMANCE_RECORDS_TABLE).insertOne(performanceStatistics);
-    } catch (error) {
-      this.handleDBError(StorageType.MONGO_DB, error, Constants.PERFORMANCE_RECORDS_TABLE);
-    }
-  }
-
   public async open(): Promise<void> {
     try {
       if (!this.connected && this?.client) {

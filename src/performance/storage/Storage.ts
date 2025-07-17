@@ -34,5 +34,4 @@ export abstract class Storage {
 
   public abstract open(): void | Promise<void>;
   public abstract close(): void | Promise<void>;
-  public abstract storePerformanceStatistics(performanceStatistics: Statistics): void | Promise<void>;
 }
