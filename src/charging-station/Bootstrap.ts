@@ -1,8 +1,6 @@
 import { ChargingStationWorkerData, WorkerMessage, WorkerMessageEvents } from '../types/Worker';
 
 import Configuration from '../utils/Configuration';
-import { Storage } from '../performance/storage/Storage';
-import { StorageFactory } from '../performance/storage/StorageFactory';
 import Utils from '../utils/Utils';
 import WorkerAbstract from '../worker/WorkerAbstract';
 import WorkerFactory from '../worker/WorkerFactory';
@@ -14,7 +12,6 @@ import { version } from '../../package.json';
 export default class Bootstrap {
   private static instance: Bootstrap | null = null;
   private static workerImplementation: WorkerAbstract | null = null;
-  private static storage: Storage;
   private static numberOfChargingStations: number;
   private version: string = version;
   private started: boolean;
@@ -38,7 +35,6 @@ export default class Bootstrap {
     if (isMainThread && !this.started) {
       try {
         Bootstrap.numberOfChargingStations = 0;
-        await Bootstrap.storage.open();
         await Bootstrap.workerImplementation.start();
         // Start ChargingStation object in worker thread
         if (Configuration.getStationTemplateURLs()) {
@@ -77,7 +73,6 @@ export default class Bootstrap {
   public async stop(): Promise<void> {
     if (isMainThread && this.started) {
       await Bootstrap.workerImplementation.stop();
-      await Bootstrap.storage.close();
     } else {
       console.error(chalk.red('Trying to stop the charging stations simulator while not started'));
     }
