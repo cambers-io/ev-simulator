@@ -24,28 +24,6 @@ export default class Configuration {
     return Configuration.objectHasOwnProperty(Configuration.getConfig(), 'logStatisticsInterval') ? Configuration.getConfig().logStatisticsInterval : 60;
   }
 
-  static getPerformanceStorage(): StorageConfiguration {
-    let storageConfiguration: StorageConfiguration;
-    if (Configuration.objectHasOwnProperty(Configuration.getConfig(), 'performanceStorage')) {
-      storageConfiguration =
-      {
-        ...Configuration.objectHasOwnProperty(Configuration.getConfig().performanceStorage, 'enabled') ? { enabled: Configuration.getConfig().performanceStorage.enabled } : { enabled: false },
-        ...Configuration.objectHasOwnProperty(Configuration.getConfig().performanceStorage, 'type') ? { type: Configuration.getConfig().performanceStorage.type } : { type: StorageType.JSON_FILE },
-        ...Configuration.objectHasOwnProperty(Configuration.getConfig().performanceStorage, 'URI')
-          ? { URI: Configuration.getConfig().performanceStorage.URI }
-          : { URI: this.getDefaultPerformanceStorageURI(Configuration.getConfig()?.performanceStorage?.type ?? StorageType.JSON_FILE) }
-      };
-    } else {
-      storageConfiguration =
-      {
-        enabled: false,
-        type: StorageType.JSON_FILE,
-        URI: this.getDefaultPerformanceStorageURI(StorageType.JSON_FILE)
-      };
-    }
-    return storageConfiguration;
-  }
-
   static getAutoReconnectMaxRetries(): number {
     Configuration.warnDeprecatedConfigurationKey('autoReconnectTimeout', null, 'Use \'ConnectionTimeOut\' OCPP parameter in charging station template instead');
     Configuration.warnDeprecatedConfigurationKey('connectionTimeout', null, 'Use \'ConnectionTimeOut\' OCPP parameter in charging station template instead');

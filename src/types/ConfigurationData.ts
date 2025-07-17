@@ -16,7 +16,6 @@ export interface StorageConfiguration {
 export default interface ConfigurationData {
   supervisionURLs?: string[];
   stationTemplateURLs: StationTemplateURL[];
-  performanceStorage?: StorageConfiguration;
   autoReconnectMaxRetries?: number;
   distributeStationsToTenantsEqually?: boolean;
   workerProcess?: WorkerProcessType;

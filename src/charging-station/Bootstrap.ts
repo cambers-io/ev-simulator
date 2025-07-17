@@ -24,7 +24,6 @@ export default class Bootstrap {
     this.started = false;
     this.workerScript = path.join(path.resolve(__dirname, '../'), 'charging-station', 'ChargingStationWorker.js');
     this.initWorkerImplementation();
-    Bootstrap.storage = StorageFactory.getStorage(Configuration.getPerformanceStorage().type, Configuration.getPerformanceStorage().URI, this.logPrefix());
     Configuration.setConfigurationChangeCallback(async () => Bootstrap.getInstance().restart());
   }
 
