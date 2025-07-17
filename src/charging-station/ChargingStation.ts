@@ -532,7 +532,6 @@ export default class ChargingStation {
     if (!Utils.isEmptyArray(this.messageQueue)) {
       this.messageQueue.forEach((message, index) => {
         this.messageQueue.splice(index, 1);
-        // TODO: evaluate the need to track performance
         this.wsConnection.send(message);
       });
     }
