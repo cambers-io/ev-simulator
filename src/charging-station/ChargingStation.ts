@@ -429,22 +429,81 @@ export default class ChargingStation {
         const currentTime = now.getTime();
 
         if (!Utils.isEmptyArray(this.getConnector(connectorId).chargingProfiles)) {
-            this.getConnector(connectorId).chargingProfiles?.forEach((chargingProfile: ChargingProfile, index: number) => {
-                logger.debug(this.logPrefix() + `Connector: ${connectorId}`);
-                logger.debug(this.logPrefix() + `Index: ${index}`);
-                logger.debug(this.logPrefix() + `chargingRateUnit: ${chargingProfile.chargingSchedule.chargingRateUnit}`);
-                logger.debug(this.logPrefix() + `chargingSchedulePeriod[0].limit: ${chargingProfile.chargingSchedule.chargingSchedulePeriod[0].limit}`);
-                logger.debug(this.logPrefix() + `chargingSchedulePeriod[0].startPeriod: ${chargingProfile.chargingSchedule.chargingSchedulePeriod[0].startPeriod}`);
-                logger.debug(this.logPrefix() + `chargingProfilePurpose: ${chargingProfile.chargingProfilePurpose}`);
-                logger.debug(this.logPrefix() + `chargingProfileKind: ${chargingProfile.chargingProfileKind}`);
-                logger.debug(this.logPrefix() + `validFrom: ${chargingProfile.validFrom}`);
-                logger.debug(this.logPrefix() + `validTo: ${chargingProfile.validTo}`);
-                logger.debug(this.logPrefix() + `chargingSchedule: ${JSON.stringify(chargingProfile.chargingSchedule)}`);
+            this.getConnector(connectorId).chargingProfiles?.forEach((chargingProfile: ChargingProfile, index: number) => {             const schedule = chargingProfile.chargingSchedule;
+              const duration = schedule.duration;
+              const recurrencyKind = chargingProfile.recurrencyKind;
+              let startScheduleTime: number;
 
-                if (chargingProfile.chargingSchedule.chargingSchedulePeriod[0].limit < allowablePower) {
-                    logger.debug(this.logPrefix() + `Lowering allowable power from ${allowablePower} to ${chargingProfile.chargingSchedule.chargingSchedulePeriod[0].limit}`);
-                    allowablePower = chargingProfile.chargingSchedule.chargingSchedulePeriod[0].limit;
+              logger.debug(this.logPrefix() + `Connector: 0`);
+              logger.debug(this.logPrefix() + `Index: ${index}`);
+              logger.debug(this.logPrefix() + `chargingProfileKind: ${chargingProfile.chargingProfileKind}`);
+              logger.debug(this.logPrefix() + `recurrencyKind: ${recurrencyKind}`);
+              logger.debug(this.logPrefix() + `original startSchedule: ${schedule.startSchedule}`);
+              logger.debug(this.logPrefix() + `duration: ${duration}`);
+
+              if (chargingProfile.chargingProfileKind === 'Recurring' && recurrencyKind) {
+                const originalStart = new Date(schedule.startSchedule);
+
+                if (recurrencyKind === 'Daily') {
+                  startScheduleTime = new Date(
+                      now.getFullYear(),
+                      now.getMonth(),
+                      now.getDate(),
+                      originalStart.getHours(),
+                      originalStart.getMinutes(),
+                      originalStart.getSeconds(),
+                      originalStart.getMilliseconds()
+                  ).getTime();
+                  logger.debug(this.logPrefix() + `Computed daily recurring startScheduleTime: ${new Date(startScheduleTime).toISOString()}`);
+                } else if (recurrencyKind === 'Weekly') {
+                  const dayDiff = now.getDay() - originalStart.getDay();
+                  const adjustedDate = new Date(now);
+                  adjustedDate.setDate(now.getDate() - dayDiff);
+                  startScheduleTime = new Date(
+                      adjustedDate.getFullYear(),
+                      adjustedDate.getMonth(),
+                      adjustedDate.getDate(),
+                      originalStart.getHours(),
+                      originalStart.getMinutes(),
+                      originalStart.getSeconds(),
+                      originalStart.getMilliseconds()
+                  ).getTime();
+                  logger.debug(this.logPrefix() + `Computed weekly recurring startScheduleTime: ${new Date(startScheduleTime).toISOString()}`);
+                } else {
+                  startScheduleTime = new Date(schedule.startSchedule).getTime();
+                  logger.debug(this.logPrefix() + `Unsupported recurrencyKind; using original startScheduleTime`);
                 }
+              } else {
+                startScheduleTime = new Date(schedule.startSchedule).getTime();
+                logger.debug(this.logPrefix() + `Absolute startScheduleTime: ${new Date(startScheduleTime).toISOString()}`);
+              }
+
+              logger.debug(this.logPrefix() + `currentTime: ${new Date(currentTime).toISOString()}`);
+
+              if (currentTime >= startScheduleTime && (!duration || currentTime < startScheduleTime + duration * 1000)) {
+                logger.debug(this.logPrefix() + `Schedule is currently active`);
+
+                try {
+                  const elapsedSeconds = (currentTime - startScheduleTime) / 1000;
+                  let maxStartPeriod = 0;
+
+                  schedule.chargingSchedulePeriod.forEach((period: ChargingSchedulePeriod, periodIndex: number) => {
+                    logger.debug(this.logPrefix() + `Period[${periodIndex}] startPeriod: ${period.startPeriod}, limit: ${period.limit}`);
+
+                    if (elapsedSeconds >= period.startPeriod && period.startPeriod >= maxStartPeriod) {
+                      allowablePower = period.limit;
+                      maxStartPeriod = period.startPeriod;
+
+                      logger.debug(this.logPrefix() + `Updated allowablePower: ${allowablePower}`);
+                      logger.debug(this.logPrefix() + `Updated maxStartPeriod: ${maxStartPeriod}`);
+                    }
+                  });
+                } catch (error) {
+                  logger.debug(this.logPrefix() + `Error while evaluating schedule: ${JSON.stringify(error)}`);
+                }
+              } else {
+                logger.debug(this.logPrefix() + `Schedule is not active`);
+              }
             });
         } else if (!Utils.isEmptyArray(this.getConnector(0).chargingProfiles)) {
             this.getConnector(0).chargingProfiles?.forEach((chargingProfile: ChargingProfile, index: number) => {
