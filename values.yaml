@@ -1,17 +1,16 @@
-ocpp_path: wss://ocpp.server.com/ocpp
+ocpp_path: wss://cpc.us.charge.ampeco.tech:443/poc14
 logname: one
 stations:
-  - serial: SERIALNUMBER
-    power: 180000
+  - serial: SC001
+    power: 100000
     currentType: DC
     requireAuthorize: "false"
     automatictransaction: "false"
     minDuration: 600
     maxDuration: 600
-    minDelayBetweenTwoTransactions: 305
-    maxDelayBetweenTwoTransactions: 305
-    connectors: [ 1,2 ]
+    minDelayBetweenTwoTransactions: 5
+    maxDelayBetweenTwoTransactions: 5
+    connectors: [ 1 ]
     rfid:
       id:
-        - ""
-
+        - "TEST"
