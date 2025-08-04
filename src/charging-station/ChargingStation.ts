@@ -443,9 +443,10 @@ export default class ChargingStation {
 
               if (chargingProfile.chargingProfileKind === 'Recurring' && recurrencyKind) {
                 const originalStart = new Date(schedule.startSchedule);
+                let computedStart: Date;
 
                 if (recurrencyKind === 'Daily') {
-                  startScheduleTime = new Date(
+                  computedStart = new Date(
                       now.getFullYear(),
                       now.getMonth(),
                       now.getDate(),
@@ -453,13 +454,19 @@ export default class ChargingStation {
                       originalStart.getMinutes(),
                       originalStart.getSeconds(),
                       originalStart.getMilliseconds()
-                  ).getTime();
-                  logger.debug(this.logPrefix() + `Computed daily recurring startScheduleTime: ${new Date(startScheduleTime).toISOString()}`);
-                } else if (recurrencyKind === 'Weekly') {
-                  const dayDiff = now.getDay() - originalStart.getDay();
+                  );
+
+                  if (currentTime < computedStart.getTime()) {
+                    computedStart.setDate(computedStart.getDate() - 1);
+                    logger.debug(this.logPrefix() + `Adjusted to previous day for Daily recurring profile`);
+                  }
+
+                  startScheduleTime = computedStart.getTime();
+                  logger.debug(this.logPrefix() + `Computed daily recurring startScheduleTime: ${computedStart.toISOString()}`);
+                } else if (recurrencyKind === 'Weekly') {        const dayDiff = now.getDay() - originalStart.getDay();
                   const adjustedDate = new Date(now);
                   adjustedDate.setDate(now.getDate() - dayDiff);
-                  startScheduleTime = new Date(
+                  computedStart = new Date(
                       adjustedDate.getFullYear(),
                       adjustedDate.getMonth(),
                       adjustedDate.getDate(),
@@ -467,8 +474,16 @@ export default class ChargingStation {
                       originalStart.getMinutes(),
                       originalStart.getSeconds(),
                       originalStart.getMilliseconds()
-                  ).getTime();
-                  logger.debug(this.logPrefix() + `Computed weekly recurring startScheduleTime: ${new Date(startScheduleTime).toISOString()}`);
+                  );
+
+                  if (currentTime < computedStart.getTime()) {
+                    computedStart.setDate(computedStart.getDate() - 7);
+                    logger.debug(this.logPrefix() + `Adjusted to previous week for Weekly recurring profile`);
+                  }
+
+                  startScheduleTime = computedStart.getTime();
+                  logger.debug(this.logPrefix() + `Computed weekly recurring startScheduleTime: ${computedStart.toISOString()}`);
+
                 } else {
                   startScheduleTime = new Date(schedule.startSchedule).getTime();
                   logger.debug(this.logPrefix() + `Unsupported recurrencyKind; using original startScheduleTime`);
@@ -519,42 +534,57 @@ export default class ChargingStation {
                 logger.debug(this.logPrefix() + `original startSchedule: ${schedule.startSchedule}`);
                 logger.debug(this.logPrefix() + `duration: ${duration}`);
 
-                if (chargingProfile.chargingProfileKind === 'Recurring' && recurrencyKind) {
-                    const originalStart = new Date(schedule.startSchedule);
+              if (chargingProfile.chargingProfileKind === 'Recurring' && recurrencyKind) {
+                const originalStart = new Date(schedule.startSchedule);
+                let computedStart: Date;
 
-                    if (recurrencyKind === 'Daily') {
-                        startScheduleTime = new Date(
-                            now.getFullYear(),
-                            now.getMonth(),
-                            now.getDate(),
-                            originalStart.getHours(),
-                            originalStart.getMinutes(),
-                            originalStart.getSeconds(),
-                            originalStart.getMilliseconds()
-                        ).getTime();
-                        logger.debug(this.logPrefix() + `Computed daily recurring startScheduleTime: ${new Date(startScheduleTime).toISOString()}`);
-                    } else if (recurrencyKind === 'Weekly') {
-                        const dayDiff = now.getDay() - originalStart.getDay();
-                        const adjustedDate = new Date(now);
-                        adjustedDate.setDate(now.getDate() - dayDiff);
-                        startScheduleTime = new Date(
-                            adjustedDate.getFullYear(),
-                            adjustedDate.getMonth(),
-                            adjustedDate.getDate(),
-                            originalStart.getHours(),
-                            originalStart.getMinutes(),
-                            originalStart.getSeconds(),
-                            originalStart.getMilliseconds()
-                        ).getTime();
-                        logger.debug(this.logPrefix() + `Computed weekly recurring startScheduleTime: ${new Date(startScheduleTime).toISOString()}`);
-                    } else {
-                        startScheduleTime = new Date(schedule.startSchedule).getTime();
-                        logger.debug(this.logPrefix() + `Unsupported recurrencyKind; using original startScheduleTime`);
-                    }
+                if (recurrencyKind === 'Daily') {
+                  computedStart = new Date(
+                      now.getFullYear(),
+                      now.getMonth(),
+                      now.getDate(),
+                      originalStart.getHours(),
+                      originalStart.getMinutes(),
+                      originalStart.getSeconds(),
+                      originalStart.getMilliseconds()
+                  );
+
+                  if (currentTime < computedStart.getTime()) {
+                    computedStart.setDate(computedStart.getDate() - 1);
+                    logger.debug(this.logPrefix() + `Adjusted to previous day for Daily recurring profile`);
+                  }
+
+                  startScheduleTime = computedStart.getTime();
+                  logger.debug(this.logPrefix() + `Computed daily recurring startScheduleTime: ${computedStart.toISOString()}`);
+                } else if (recurrencyKind === 'Weekly') {        const dayDiff = now.getDay() - originalStart.getDay();
+                  const adjustedDate = new Date(now);
+                  adjustedDate.setDate(now.getDate() - dayDiff);
+                  computedStart = new Date(
+                      adjustedDate.getFullYear(),
+                      adjustedDate.getMonth(),
+                      adjustedDate.getDate(),
+                      originalStart.getHours(),
+                      originalStart.getMinutes(),
+                      originalStart.getSeconds(),
+                      originalStart.getMilliseconds()
+                  );
+
+                  if (currentTime < computedStart.getTime()) {
+                    computedStart.setDate(computedStart.getDate() - 7);
+                    logger.debug(this.logPrefix() + `Adjusted to previous week for Weekly recurring profile`);
+                  }
+
+                  startScheduleTime = computedStart.getTime();
+                  logger.debug(this.logPrefix() + `Computed weekly recurring startScheduleTime: ${computedStart.toISOString()}`);
+
                 } else {
-                    startScheduleTime = new Date(schedule.startSchedule).getTime();
-                    logger.debug(this.logPrefix() + `Absolute startScheduleTime: ${new Date(startScheduleTime).toISOString()}`);
+                  startScheduleTime = new Date(schedule.startSchedule).getTime();
+                  logger.debug(this.logPrefix() + `Unsupported recurrencyKind; using original startScheduleTime`);
                 }
+              } else {
+                startScheduleTime = new Date(schedule.startSchedule).getTime();
+                logger.debug(this.logPrefix() + `Absolute startScheduleTime: ${new Date(startScheduleTime).toISOString()}`);
+              }
 
                 logger.debug(this.logPrefix() + `currentTime: ${new Date(currentTime).toISOString()}`);
 
